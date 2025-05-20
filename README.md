@@ -17,10 +17,15 @@ To execute a specific test class, use the `-Dtest` option:
 
 For example, to run each class on this project:
 `mvn -Dtest=DeleteAccountTest test`
+
 `mvn -Dtest=DeleteBookTest test`
+
 `mvn -Dtest=LoginTest test`
+
 `mvn -Dtest=LogoutTest test`
+
 `mvn -Dtest=RegisterTest test`
+
 `mvn -Dtest=SearchBookTest test`
 
 ## Run a Specific Test Method
@@ -62,10 +67,9 @@ To ensure that the bookstore application at `https://demoqa.com/books` is visual
 
 ---
 
-
 ### **Test Scenarios**
 
-### 1. Delete Account 
+### 1. Delete Account
 
 #### Positive Cases
 
@@ -125,6 +129,7 @@ To ensure that the bookstore application at `https://demoqa.com/books` is visual
 - User cannot register without verifying the reCAPTCHA. *(Implemented)*
 
 ---
+
 ### 6. Search Functionality
 
 #### Positive Cases
