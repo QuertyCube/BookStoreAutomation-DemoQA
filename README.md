@@ -13,9 +13,11 @@ This project contains automated test scripts for the DemoQA Bookstore applicatio
 ## **Run a Specific Test Class**
 
 To execute a specific test class, use the `-Dtest` option:
+
 `mvn test -Dtest="ClassName"`
 
 For example, to run each class on this project:
+
 `mvn -Dtest=DeleteAccountTest test`
 
 `mvn -Dtest=DeleteBookTest test`
@@ -31,9 +33,11 @@ For example, to run each class on this project:
 ## Run a Specific Test Method
 
 To execute a specific test method within a class:
+
 `mvn test -Dtest="ClassName#methodName"`
 
 For example, to run the `userCanSearchBook` method in the `SearchBookTest` class:
+
 `mvn test -Dtest="SearchBookTest#userCanSearchBook"`
 
 ---
