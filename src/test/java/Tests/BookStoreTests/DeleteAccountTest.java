@@ -13,6 +13,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.time.Duration;
 
 public class DeleteAccountTest extends BaseTest {
@@ -46,7 +47,7 @@ public class DeleteAccountTest extends BaseTest {
     }
 
     @Test(priority = 10)
-    public void userCanDeleteAccount() {
+    public void userCanDeleteAccount() throws IOException {
         // Verify the logged-in username
         Assert.assertEquals(profilePage.userNameValue(), username, "Logged-in username does not match!");
 
@@ -64,7 +65,42 @@ public class DeleteAccountTest extends BaseTest {
         loginPage.inputUsername(username);
         loginPage.inputPassword(password);
         loginPage.clickOnLoginButton();
+        System.out.println("Error message: " + loginPage.errorMessage());
         Assert.assertEquals(loginPage.errorMessage(), "Invalid username or password!", "Error message mismatch!");
         Assert.assertEquals(driver.getCurrentUrl(), "https://demoqa.com/login", "URL mismatch after account deletion!");
+        createUserViaApi();
+    }
+
+    public void createUserViaApi() throws IOException {
+        String apiUrl = "https://demoqa.com/Account/v1/User";
+        String user = dotenv.get("usernameDelete");
+        String pass = dotenv.get("passwordDelete");
+        String jsonBody = String.format("{ \"userName\": \"%s\", \"password\": \"%s\" }", user, pass);
+
+        java.net.URL url = new java.net.URL(apiUrl);
+        java.net.HttpURLConnection con = (java.net.HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setDoOutput(true);
+
+        try (java.io.OutputStream os = con.getOutputStream()) {
+            byte[] input = jsonBody.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        int responseCode = con.getResponseCode();
+        System.out.println("Response Code: " + responseCode);
+        Assert.assertEquals(responseCode, 201, "User creation failed!");
+
+        // // Optionally, read the response
+        // try (java.io.BufferedReader br = new java.io.BufferedReader(
+        //         new java.io.InputStreamReader(con.getInputStream(), "utf-8"))) {
+        //     StringBuilder response = new StringBuilder();
+        //     String responseLine;
+        //     while ((responseLine = br.readLine()) != null) {
+        //         response.append(responseLine.trim());
+        //     }
+        //     System.out.println("API Response: " + response.toString());
+        // }
     }
 }

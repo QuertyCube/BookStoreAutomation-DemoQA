@@ -18,17 +18,19 @@ To execute a specific test class, use the `-Dtest` option:
 
 For example, to run each class on this project:
 
-`mvn -Dtest=DeleteAccountTest test`
+`mvn test -Dtest=DeleteAccountTest`
 
-`mvn -Dtest=DeleteBookTest test`
+`mvn test -Dtest=DeleteBookTest`
 
-`mvn -Dtest=LoginTest test`
+`mvn test -Dtest=LoginTest`
 
-`mvn -Dtest=LogoutTest test`
+`mvn test -Dtest=LogoutTest`
 
-`mvn -Dtest=RegisterTest test`
+`mvn test -Dtest=RegisterAccountTest`
 
-`mvn -Dtest=SearchBookTest test`
+`mvn test -Dtest=SearchBookTest`
+
+mvn test -Dtest=SearchBookTest,RegisterAccountTest,LogoutTest,LoginTest,DeleteBookTest,DeleteAccountTest
 
 ## Run a Specific Test Method
 
