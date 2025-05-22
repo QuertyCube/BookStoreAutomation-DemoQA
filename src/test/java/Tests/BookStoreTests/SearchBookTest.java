@@ -47,7 +47,7 @@ public class SearchBookTest extends BaseTest {
         Assert.assertTrue(isBookFound, "The book '" + searchInput + "' was not found in the search results.");
     }
 
-    @Test(priority = 2)
+    @Test(priority = 3)
     public void userCanSearchBooksCaseInsensitive() {
 
         String[] searchInputs = { "git pocket guide", "GIT POCKET GUIDE" };

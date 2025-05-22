@@ -46,7 +46,7 @@ public class DeleteAccountTest extends BaseTest {
         loginPage.clickOnLoginButton();
     }
 
-    @Test(priority = 10)
+    @Test(priority = 1)
     public void userCanDeleteAccount() throws IOException {
         // Verify the logged-in username
         Assert.assertEquals(profilePage.userNameValue(), username, "Logged-in username does not match!");
