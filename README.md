@@ -1,10 +1,12 @@
-# Case Study 1: Payment Aggregator - Settlement Request Flow Testing
+# Payment Aggregator - Settlement Request Flow Testing
 
 This case study covers the validation of the **Settlement Request Flow** feature on the Merchant Dashboard, which allows merchants to request settlements for their account balances.
 
 All detailed test cases — including scenarios, steps, expected results, and mapping to user stories — have been compiled into an Excel document.
 
 📂  **Test Case File** : https://docs.google.com/spreadsheets/d/1wup5dPOytKZ6LsreFH9bVlZtBeQbFaFA/edit?usp=sharing&ouid=112773817720273419085&rtpof=true&sd=true
+
+📂 **Video Demo** : https://drive.google.com/drive/folders/1UthVQlk82dznLtrb6GKr96jHIsLpDfyi?usp=sharing
 
 # Automation Scripts (DemoQA Bookstore)
 
@@ -177,7 +179,3 @@ To ensure that the bookstore application at `https://demoqa.com/books` is visual
 
 - Generate test reports using TestNG.
 - Log errors and failed test cases for debugging.
-
----
-
-### API Testing
