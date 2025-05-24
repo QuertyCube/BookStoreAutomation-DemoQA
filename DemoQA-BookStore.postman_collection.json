@@ -1,0 +1,1271 @@
+{
+	"info": {
+		"_postman_id": "c8ddf056-f5b7-4183-a6a1-93cdf10467ba",
+		"name": "DemoQA-BookStore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15018054"
+	},
+	"item": [
+		{
+			"name": "Create user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ✅ Test if the status code is 201 (Success)",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// ✅ Test if the response is in JSON format",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.response.to.have.jsonBody();",
+							"});",
+							"",
+							"// ✅ Check basic fields must exist",
+							"pm.test(\"Response contains required fields\", function () {",
+							"    const jsonResponse = pm.response.json();",
+							"",
+							"    pm.expect(jsonResponse).to.have.property(\"userID\");",
+							"    pm.expect(jsonResponse).to.have.property(\"username\");",
+							"    pm.expect(jsonResponse).to.have.property(\"books\");",
+							"",
+							"    // Validate book fields only if books array is not empty",
+							"    if (Array.isArray(jsonResponse.books) && jsonResponse.books.length > 0) {",
+							"        const book = jsonResponse.books[0];",
+							"",
+							"        pm.test(\"Book object contains required fields\", function () {",
+							"            pm.expect(book).to.have.property(\"isbn\");",
+							"            pm.expect(book).to.have.property(\"title\");",
+							"            pm.expect(book).to.have.property(\"subTitle\");",
+							"            pm.expect(book).to.have.property(\"author\");",
+							"            pm.expect(book).to.have.property(\"publish_date\");",
+							"            pm.expect(book).to.have.property(\"publisher\");",
+							"            pm.expect(book).to.have.property(\"pages\");",
+							"            pm.expect(book).to.have.property(\"description\");",
+							"            pm.expect(book).to.have.property(\"website\");",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"// ✅ Test if 'books' array is not empty (optional, based on use case)",
+							"pm.test(\"Books array is present (may be empty)\", function () {",
+							"    const jsonResponse = pm.response.json();",
+							"    pm.expect(jsonResponse.books).to.be.an(\"array\");",
+							"});",
+							"",
+							"// ✅ Test error handling for status codes 404 and 406",
+							"pm.test(\"Error Handling\", function () {",
+							"    const jsonResponse = pm.response.json();",
+							"    if (pm.response.code === 404 || pm.response.code === 406) {",
+							"        pm.expect(jsonResponse).to.have.property(\"code\");",
+							"        pm.expect(jsonResponse).to.have.property(\"message\");",
+							"    }",
+							"});",
+							"",
+							"// ✅ Extract userID from response and save it as an environment variable",
+							"if (pm.response.code === 201) {",
+							"    const jsonData = pm.response.json();",
+							"    pm.collectionVariables.set(\"userID\", jsonData.userID);",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userName\": \"Kenapa123\",\n  \"password\": \"Kenapa123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/Account/v1/User",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"User"
+					]
+				},
+				"description": "Generated from cURL: curl -X 'POST' \\\n  'https://demoqa.com/Account/v1/User' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"userName\": \"giver\",\n  \"password\": \"Password@12\"\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Account GenerateToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ✅ Test if the status code is 200 (Success)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// ✅ Test if the response is in JSON format",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.response.to.have.jsonBody();",
+							"});",
+							"",
+							"// ✅ Test if the response contains the 'token' field",
+							"pm.test(\"Response contains token\", function () {",
+							"    pm.response.to.have.jsonBody('token');",
+							"});",
+							"",
+							"// ✅ Test if the token value is a string (non-empty)",
+							"pm.test(\"Token is a valid string\", function () {",
+							"    const jsonResponse = pm.response.json();",
+							"    pm.expect(jsonResponse.token).to.be.a('string');",
+							"    pm.expect(jsonResponse.token).to.have.length.above(0);",
+							"});",
+							"",
+							"// ✅ Test if the 'expires' field is a valid date string",
+							"pm.test(\"Expires is a valid date\", function () {",
+							"    const jsonResponse = pm.response.json();",
+							"    pm.expect(Date.parse(jsonResponse.expires)).to.be.a('number');",
+							"});",
+							"",
+							"// ✅ Test if the 'status' field is \"Success\"",
+							"pm.test(\"Status is Success\", function () {",
+							"    const jsonResponse = pm.response.json();",
+							"    pm.expect(jsonResponse.status).to.equal(\"Success\");",
+							"});",
+							"",
+							"// ✅ Test if the 'result' field is a non-empty string",
+							"pm.test(\"Result is a valid string\", function () {",
+							"    const jsonResponse = pm.response.json();",
+							"    pm.expect(jsonResponse.result).to.be.a('string');",
+							"    pm.expect(jsonResponse.result).to.have.length.above(0);",
+							"});",
+							"",
+							"// ✅ Test error handling (if status code is 400)",
+							"pm.test(\"Error Handling\", function () {",
+							"    var jsonResponse = pm.response.json();",
+							"    if (pm.response.code === 400) {",
+							"        pm.expect(jsonResponse).to.have.property(\"code\");",
+							"        pm.expect(jsonResponse).to.have.property(\"message\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userName\": \"Kenapa123\",\n  \"password\": \"Kenapa123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/Account/v1/GenerateToken",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"GenerateToken"
+					]
+				},
+				"description": "Generated from cURL: curl -X 'POST' \\\n  'https://demoqa.com/Account/v1/GenerateToken' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"userName\": \"giver\",\n  \"password\": \"Password@12\"\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if status code is 200 (Success)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Check if the response is in JSON format",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.response.to.have.jsonBody();",
+							"});",
+							"",
+							"// Check if the response body is a boolean (true)",
+							"pm.test(\"Response body is true\", function () {",
+							"    pm.response.to.have.body(\"true\");",
+							"});",
+							"",
+							"// Check for error handling for status codes 400 and 404",
+							"pm.test(\"Error handling\", function () {",
+							"    var response = pm.response.json();",
+							"    if (pm.response.code === 400 || pm.response.code === 404) {",
+							"        pm.expect(response).to.have.property(\"code\");",
+							"        pm.expect(response).to.have.property(\"message\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userName\": \"Kenapa123\",\n  \"password\": \"Kenapa123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/Account/v1/Authorized",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"Authorized"
+					]
+				},
+				"description": "Generated from cURL: curl -X 'POST' \\\n  'https://demoqa.com/Account/v1/Authorized' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"userName\": \"giver\",\n  \"password\": \"string\"\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const statusCode = pm.response.code;",
+							"",
+							"if (statusCode === 200) {",
+							"    pm.test(\"Status code is 200 - OK\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"",
+							"    pm.test(\"Response has required fields\", function () {",
+							"        const res = pm.response.json();",
+							"        pm.expect(res).to.have.property(\"userId\").that.is.a(\"string\");",
+							"        pm.expect(res).to.have.property(\"username\").that.is.a(\"string\");",
+							"        pm.expect(res).to.have.property(\"books\").that.is.an(\"array\");",
+							"    });",
+							"",
+							"    const res = pm.response.json();",
+							"    const books = res.books;",
+							"",
+							"    if (books.length > 0) {",
+							"        pm.test(\"Books are not empty and have valid structure\", function () {",
+							"            books.forEach((book, index) => {",
+							"                pm.expect(book).to.have.property(\"isbn\").that.is.a(\"string\");",
+							"                pm.expect(book).to.have.property(\"title\").that.is.a(\"string\");",
+							"                pm.expect(book).to.have.property(\"subTitle\").that.is.a(\"string\");",
+							"                pm.expect(book).to.have.property(\"author\").that.is.a(\"string\");",
+							"                pm.expect(book).to.have.property(\"publish_date\").that.is.a(\"string\");",
+							"                pm.expect(book).to.have.property(\"publisher\").that.is.a(\"string\");",
+							"                pm.expect(book).to.have.property(\"pages\").that.is.a(\"number\");",
+							"                pm.expect(book).to.have.property(\"description\").that.is.a(\"string\");",
+							"                pm.expect(book).to.have.property(\"website\").that.is.a(\"string\");",
+							"            });",
+							"        });",
+							"    } else {",
+							"        pm.test(\"Books array is empty (valid case)\", function () {",
+							"            pm.expect(books.length).to.eql(0);",
+							"        });",
+							"    }",
+							"",
+							"} else if (statusCode === 401) {",
+							"    let errorMessage = \"\";",
+							"    try {",
+							"        const res = pm.response.json();",
+							"        errorMessage = res.message || JSON.stringify(res);",
+							"    } catch (e) {",
+							"        errorMessage = pm.response.text();",
+							"    }",
+							"",
+							"    pm.test(\"Status code is 401 - Unauthorized\", function () {",
+							"        pm.response.to.have.status(401);",
+							"    });",
+							"",
+							"    pm.test(\"401 Error response structure\", function () {",
+							"        const res = pm.response.json();",
+							"        pm.expect(res).to.have.property(\"code\").that.is.a(\"number\");",
+							"        pm.expect(res).to.have.property(\"message\").that.is.a(\"string\");",
+							"    });",
+							"",
+							"    pm.test(\"401 Error message\", function () {",
+							"        pm.expect.fail(`401 Error Message: ${errorMessage}`);",
+							"    });",
+							"",
+							"} else {",
+							"    let errorMessage = \"\";",
+							"    try {",
+							"        const res = pm.response.json();",
+							"        errorMessage = res.message || JSON.stringify(res);",
+							"    } catch (e) {",
+							"        errorMessage = pm.response.text();",
+							"    }",
+							"",
+							"    pm.test(\"Unexpected status code\", function () {",
+							"        pm.expect.fail(`Expected 200 or 401, but got ${statusCode}. Message: ${errorMessage}`);",
+							"    });",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "Kenapa123",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "Kenapa123!",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "authorization",
+						"value": "Basic d2FiYWJhMTIzOldhYmFiYUAxMg=="
+					}
+				],
+				"url": {
+					"raw": "https://demoqa.com/Account/v1/User/{{userID}}",
+					"protocol": "https",
+					"host": [
+						"demoqa",
+						"com"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"User",
+						"{{userID}}"
+					]
+				},
+				"description": "Generated from cURL: curl -X 'GET' \\\n  'https://demoqa.com/Account/v1/User/{UUID}' \\\n  -H 'accept: application/json' \\\n  -H 'authorization: Basic d2FiYWJhMTIzOldhYmFiYUAxMg=='"
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if response status is 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Check if response is valid JSON",
+							"pm.test(\"Response is valid JSON\", function () {",
+							"    pm.expect(pm.response.text()).to.not.be.empty;",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"// Parse the response body",
+							"let jsonData;",
+							"try {",
+							"    jsonData = pm.response.json();",
+							"} catch (e) {",
+							"    pm.test(\"Response is not valid JSON\", function () {",
+							"        throw new Error(\"Response is not valid JSON\");",
+							"    });",
+							"}",
+							"",
+							"// Validate that 'books' is an array and not empty",
+							"pm.test(\"'books' is an array and not empty\", function () {",
+							"    pm.expect(jsonData.books).to.be.an(\"array\").that.is.not.empty;",
+							"});",
+							"",
+							"// Validate structure of each book",
+							"jsonData.books.forEach((book, index) => {",
+							"    pm.test(`Book #${index + 1} has required fields`, function () {",
+							"        pm.expect(book).to.have.property(\"isbn\");",
+							"        pm.expect(book).to.have.property(\"title\");",
+							"        pm.expect(book).to.have.property(\"subTitle\");",
+							"        pm.expect(book).to.have.property(\"author\");",
+							"        pm.expect(book).to.have.property(\"publish_date\");",
+							"        pm.expect(book).to.have.property(\"publisher\");",
+							"        pm.expect(book).to.have.property(\"pages\");",
+							"        pm.expect(book).to.have.property(\"description\");",
+							"        pm.expect(book).to.have.property(\"website\");",
+							"    });",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://demoqa.com/BookStore/v1/Books",
+					"protocol": "https",
+					"host": [
+						"demoqa",
+						"com"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get A Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ✅ Validate status code is 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// ✅ JSON schema for a single book",
+							"var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"        isbn: { type: \"string\" },",
+							"        title: { type: \"string\" },",
+							"        subTitle: { type: \"string\" },",
+							"        author: { type: \"string\" },",
+							"        publish_date: { type: \"string\", format: \"date-time\" },",
+							"        publisher: { type: \"string\" },",
+							"        pages: { type: \"integer\" },",
+							"        description: { type: \"string\" },",
+							"        website: { type: \"string\", format: \"uri\" }",
+							"    },",
+							"    required: [",
+							"        \"isbn\", \"title\", \"subTitle\", \"author\",",
+							"        \"publish_date\", \"publisher\", \"pages\",",
+							"        \"description\", \"website\"",
+							"    ]",
+							"};",
+							"",
+							"// ✅ Parse response",
+							"var jsonResponse = pm.response.json();",
+							"",
+							"// ✅ Validate schema",
+							"pm.test(\"Schema is valid\", function () {",
+							"    pm.expect(tv4.validate(jsonResponse, schema), JSON.stringify(tv4.error)).to.be.true;",
+							"});",
+							"",
+							"// ✅ Set collection variables for future use",
+							"pm.collectionVariables.set(\"isbn_id\", jsonResponse.isbn);",
+							"pm.collectionVariables.set(\"book_title\", jsonResponse.title);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://demoqa.com/BookStore/v1/Book?ISBN={{isbn_id}}",
+					"protocol": "https",
+					"host": [
+						"demoqa",
+						"com"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Book"
+					],
+					"query": [
+						{
+							"key": "ISBN",
+							"value": "{{isbn_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Book to User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const statusCode = pm.response.code;",
+							"",
+							"if (statusCode === 201) {",
+							"    pm.test(\"Status code is 201 - Created\", function () {",
+							"        pm.response.to.have.status(201);",
+							"    });",
+							"",
+							"    pm.test(\"Response has correct structure\", function () {",
+							"        const res = pm.response.json();",
+							"        pm.expect(res).to.have.property(\"isbn\");",
+							"        pm.expect(typeof res.isbn).to.eql(\"string\");",
+							"    });",
+							"",
+							"    // pm.test(\"Response has correct structure\", function () {",
+							"    //     const res = pm.response.json();",
+							"",
+							"    //     // Jika ada 'books' array, cek isbn di setiap item",
+							"    //     if (Array.isArray(res.books)) {",
+							"    //         pm.expect(res.books.length).to.be.greaterThan(0);",
+							"    //         res.books.forEach(book => {",
+							"    //             pm.expect(book).to.have.property(\"isbn\");",
+							"    //             pm.expect(typeof book.isbn).to.eql(\"string\");",
+							"    //         });",
+							"    //     } else {",
+							"    //         // Jika tidak ada 'books' array, cek langsung properti 'isbn' di root",
+							"    //         pm.expect(res).to.have.property(\"isbn\");",
+							"    //         pm.expect(typeof res.isbn).to.eql(\"string\");",
+							"    //     }",
+							"    // });",
+							"",
+							"} else if (statusCode === 400) {",
+							"    let errorMessage = \"\";",
+							"        try {",
+							"            const res = pm.response.json();",
+							"            errorMessage = res.message || JSON.stringify(res);",
+							"        } catch (e) {",
+							"            errorMessage = pm.response.text();",
+							"        }",
+							"        ",
+							"    pm.test(\"Status code is 400 - Bad Request\", function () {",
+							"        pm.response.to.have.status(400);",
+							"    });",
+							"",
+							"    pm.test(\"Error response has correct structure\", function () {",
+							"        const res = pm.response.json();",
+							"        pm.expect(res).to.have.property(\"code\");",
+							"        pm.expect(res).to.have.property(\"message\");",
+							"        pm.expect(typeof res.code).to.eql(\"number\");",
+							"        pm.expect(typeof res.message).to.eql(\"string\");",
+							"    });",
+							"",
+							"    // 💥 Show error message in Test Results as a failing test",
+							"    pm.test(\"Error message (400)\", function () {",
+							"        pm.expect.fail(`400 Error Message: ${errorMessage}`);",
+							"    });",
+							"",
+							"} else if (statusCode === 401) {",
+							"    pm.test(\"Status code is 401 - Unauthorized\", function () {",
+							"        pm.response.to.have.status(401);",
+							"    });",
+							"",
+							"    pm.test(\"Unauthorized response has correct structure\", function () {",
+							"        const res = pm.response.json();",
+							"        pm.expect(res).to.have.property(\"code\");",
+							"        pm.expect(res).to.have.property(\"message\");",
+							"        pm.expect(typeof res.code).to.eql(\"number\");",
+							"        pm.expect(typeof res.message).to.eql(\"string\");",
+							"    });",
+							"",
+							"} else {",
+							"    pm.test(\"Unexpected status code\", function () {",
+							"        let errorMessage = \"\";",
+							"        try {",
+							"            const res = pm.response.json();",
+							"            errorMessage = res.message || JSON.stringify(res);",
+							"        } catch (e) {",
+							"            errorMessage = pm.response.text();",
+							"        }",
+							"",
+							"        console.log(\"🚨 Error Message:\", errorMessage);",
+							"        pm.expect.fail(`Expected 201, 400, or 401, but got ${statusCode}. Message: ${errorMessage}`);",
+							"    });",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "Kenapa123",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "Kenapa123!",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userId\": \"{{userID}}\" ,\n  \"collectionOfIsbns\": [\n    {\n      \"isbn\": \"9781449331818\"\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/BookStore/v1/Books",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Added Book to User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const statusCode = pm.response.code;",
+							"",
+							"if (statusCode === 200) {",
+							"    pm.test(\"Status code is 200 - OK\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"",
+							"    pm.test(\"Response has correct structure\", function () {",
+							"        const res = pm.response.json();",
+							"        pm.expect(res).to.have.property(\"userId\");",
+							"        pm.expect(res).to.have.property(\"username\");",
+							"        pm.expect(res).to.have.property(\"books\").that.is.an(\"array\");",
+							"",
+							"        if (res.books.length > 0) {",
+							"            const book = res.books[0];",
+							"            pm.expect(book).to.have.property(\"isbn\").that.is.a(\"string\");",
+							"            pm.expect(book).to.have.property(\"title\").that.is.a(\"string\");",
+							"            pm.expect(book).to.have.property(\"subTitle\").that.is.a(\"string\");",
+							"            pm.expect(book).to.have.property(\"author\").that.is.a(\"string\");",
+							"            pm.expect(book).to.have.property(\"publish_date\").that.is.a(\"string\");",
+							"            pm.expect(book).to.have.property(\"publisher\").that.is.a(\"string\");",
+							"            pm.expect(book).to.have.property(\"pages\").that.is.a(\"number\");",
+							"            pm.expect(book).to.have.property(\"description\").that.is.a(\"string\");",
+							"            pm.expect(book).to.have.property(\"website\").that.is.a(\"string\");",
+							"        }",
+							"    });",
+							"",
+							"} else if (statusCode === 400) {",
+							"    let errorMessage = \"\";",
+							"    try {",
+							"        const res = pm.response.json();",
+							"        errorMessage = res.message || JSON.stringify(res);",
+							"    } catch (e) {",
+							"        errorMessage = pm.response.text();",
+							"    }",
+							"",
+							"    pm.test(\"Status code is 400 - Bad Request\", function () {",
+							"        pm.response.to.have.status(400);",
+							"    });",
+							"",
+							"    pm.test(\"Error response has correct structure (400)\", function () {",
+							"        const res = pm.response.json();",
+							"        pm.expect(res).to.have.property(\"code\").that.is.a(\"number\");",
+							"        pm.expect(res).to.have.property(\"message\").that.is.a(\"string\");",
+							"    });",
+							"",
+							"    pm.test(\"400 Error Message\", function () {",
+							"        pm.expect.fail(`400 Error Message: ${errorMessage}`);",
+							"    });",
+							"",
+							"} else if (statusCode === 401) {",
+							"    let errorMessage = \"\";",
+							"    try {",
+							"        const res = pm.response.json();",
+							"        errorMessage = res.message || JSON.stringify(res);",
+							"    } catch (e) {",
+							"        errorMessage = pm.response.text();",
+							"    }",
+							"",
+							"    pm.test(\"Status code is 401 - Unauthorized\", function () {",
+							"        pm.response.to.have.status(401);",
+							"    });",
+							"",
+							"    pm.test(\"Error response has correct structure (401)\", function () {",
+							"        const res = pm.response.json();",
+							"        pm.expect(res).to.have.property(\"code\").that.is.a(\"number\");",
+							"        pm.expect(res).to.have.property(\"message\").that.is.a(\"string\");",
+							"    });",
+							"",
+							"    pm.test(\"401 Error Message\", function () {",
+							"        pm.expect.fail(`401 Error Message: ${errorMessage}`);",
+							"    });",
+							"",
+							"} else {",
+							"    let errorMessage = \"\";",
+							"    try {",
+							"        const res = pm.response.json();",
+							"        errorMessage = res.message || JSON.stringify(res);",
+							"    } catch (e) {",
+							"        errorMessage = pm.response.text();",
+							"    }",
+							"",
+							"    pm.test(\"Unexpected status code\", function () {",
+							"        pm.expect.fail(`Expected 200, 400, or 401 but got ${statusCode}. Message: ${errorMessage}`);",
+							"    });",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "Kenapa123",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "Kenapa123!",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "authorization",
+						"value": "Basic S2VuYXBhMTIzOktlbmFwYTEyMyE="
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"userId\": \"{{userID}}\",\n  \"isbn\": \"9781491904244\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://demoqa.com/BookStore/v1/Books/9781449331818",
+					"protocol": "https",
+					"host": [
+						"demoqa",
+						"com"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Books",
+						"9781449331818"
+					]
+				},
+				"description": "Generated from cURL: curl -X 'PUT' \\\n  'https://demoqa.com/BookStore/v1/Books/9781491904244' \\\n  -H 'accept: application/json' \\\n  -H 'authorization: Basic S2VuYXBhMTIzOktlbmFwYTEyMyE=' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"userId\": \"string\",\n  \"isbn\": \"string\"\n}'"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Validate response based on status code\", function () {",
+							"    const statusCode = pm.response.code;",
+							"    ",
+							"    // === 204 No Content ===",
+							"    if (statusCode === 204) {",
+							"        pm.test(\"Status code is 204 - No Content\", function () {",
+							"            pm.response.to.have.status(204);",
+							"        });",
+							"",
+							"        pm.test(\"Response body should be empty\", function () {",
+							"            pm.expect(pm.response.text()).to.eql(\"\");",
+							"        });",
+							"    }",
+							"",
+							"    // === 401 Unauthorized ===",
+							"    else if (statusCode === 401) {",
+							"        pm.test(\"Status code is 401 - Unauthorized\", function () {",
+							"            pm.response.to.have.status(401);",
+							"        });",
+							"",
+							"        pm.test(\"Response has valid JSON body\", function () {",
+							"            pm.response.to.be.withBody;",
+							"            pm.response.to.be.json;",
+							"        });",
+							"",
+							"        pm.test(\"Response body contains expected fields\", function () {",
+							"            const jsonData = pm.response.json();",
+							"            pm.expect(jsonData).to.have.property(\"code\");",
+							"            pm.expect(jsonData).to.have.property(\"message\");",
+							"        });",
+							"",
+							"        pm.test(\"Validate field types in response body\", function () {",
+							"            const jsonData = pm.response.json();",
+							"            pm.expect(jsonData.code).to.be.a(\"number\");",
+							"            pm.expect(jsonData.message).to.be.a(\"string\");",
+							"        });",
+							"    }",
+							"",
+							"    // === Other unexpected status ===",
+							"    else {",
+							"        pm.test(\"Unexpected status code\", function () {",
+							"        let errorMessage = \"\";",
+							"        try {",
+							"            const res = pm.response.json();",
+							"            errorMessage = res.message || JSON.stringify(res);",
+							"        } catch (e) {",
+							"            errorMessage = pm.response.text();",
+							"        }",
+							"",
+							"        console.log(\"🚨 Error Message:\", errorMessage);",
+							"        pm.expect.fail(`Expected 204, 400, or 401, but got ${statusCode}. Message: ${errorMessage}`);",
+							"    });",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "Kenapa123",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "Kenapa123!",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"isbn\": \"9781491904244\",\n  \"userId\": \"{{userID}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/BookStore/v1/Book",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Book"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Validate response based on status code\", function () {",
+							"    const statusCode = pm.response.code;",
+							"    ",
+							"    // === 204 No Content ===",
+							"    if (statusCode === 204) {",
+							"        pm.test(\"Status code is 204 - No Content\", function () {",
+							"            pm.response.to.have.status(204);",
+							"        });",
+							"",
+							"        pm.test(\"Response body should be empty\", function () {",
+							"            pm.expect(pm.response.text()).to.eql(\"\");",
+							"        });",
+							"    }",
+							"",
+							"    // === 401 Unauthorized ===",
+							"    else if (statusCode === 401) {",
+							"        pm.test(\"Status code is 401 - Unauthorized\", function () {",
+							"            pm.response.to.have.status(401);",
+							"        });",
+							"",
+							"        pm.test(\"Response has valid JSON body\", function () {",
+							"            pm.response.to.be.withBody;",
+							"            pm.response.to.be.json;",
+							"        });",
+							"",
+							"        pm.test(\"Response body contains expected fields\", function () {",
+							"            const jsonData = pm.response.json();",
+							"            pm.expect(jsonData).to.have.property(\"code\");",
+							"            pm.expect(jsonData).to.have.property(\"message\");",
+							"        });",
+							"",
+							"        pm.test(\"Validate field types in response body\", function () {",
+							"            const jsonData = pm.response.json();",
+							"            pm.expect(jsonData.code).to.be.a(\"number\");",
+							"            pm.expect(jsonData.message).to.be.a(\"string\");",
+							"        });",
+							"    }",
+							"",
+							"    // === Other unexpected status ===",
+							"    else {",
+							"        pm.test(\"Unexpected status code\", function () {",
+							"        let errorMessage = \"\";",
+							"        try {",
+							"            const res = pm.response.json();",
+							"            errorMessage = res.message || JSON.stringify(res);",
+							"        } catch (e) {",
+							"            errorMessage = pm.response.text();",
+							"        }",
+							"",
+							"        console.log(\"🚨 Error Message:\", errorMessage);",
+							"        pm.expect.fail(`Expected 204, 400, or 401, but got ${statusCode}. Message: ${errorMessage}`);",
+							"    });",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "Kenapa123",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "Kenapa123!",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/BookStore/v1/Books?UserId={{userID}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"BookStore",
+						"v1",
+						"Books"
+					],
+					"query": [
+						{
+							"key": "UserId",
+							"value": "{{userID}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete A User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 2xx (Success)\", function () {",
+							"    const status = pm.response.code;",
+							"    pm.expect(status).to.be.within(200, 299);",
+							"});",
+							"",
+							"pm.test(\"Check if status code is 4xx client error\", function () {",
+							"    const status = pm.response.code;",
+							"    pm.expect(status < 400 || status >= 500).to.be.true; // Fail if 4xx",
+							"});",
+							"",
+							"pm.test(\"Check if status code is not Unauthorized (401)\", function () {",
+							"    const status = pm.response.code;",
+							"    pm.expect(status).to.not.equal(401); // Fail if 401",
+							"});",
+							"",
+							"if (pm.response.code !== 204) {",
+							"    pm.test(\"Response has 'code' field and is string\", function () {",
+							"        let json;",
+							"        try {",
+							"            json = pm.response.json();",
+							"        } catch (err) {",
+							"            pm.expect.fail(\"Response is not valid JSON\");",
+							"        }",
+							"        pm.expect(json).to.have.property(\"code\");",
+							"        pm.expect(json.code).to.be.a(\"string\");",
+							"    });",
+							"",
+							"    pm.test(\"Response has valid 'message' field\", function () {",
+							"        const json = pm.response.json();",
+							"        pm.expect(json).to.have.property(\"message\");",
+							"        pm.expect(json.message).to.be.a(\"string\");",
+							"        pm.expect(json.message).to.not.equal(\"User Id not correct!\");",
+							"        pm.expect(json.message).to.not.equal(\"User not authorized!\");",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status 204 No Content - skip JSON body validation\", function () {",
+							"        pm.expect(true).to.be.true;  // Just a placeholder test, always pass",
+							"    });",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "Kenapa123",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "Kenapa123!",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "https://demoqa.com/Account/v1/User/{{userID}}",
+					"protocol": "https",
+					"host": [
+						"demoqa",
+						"com"
+					],
+					"path": [
+						"Account",
+						"v1",
+						"User",
+						"{{userID}}"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Generated from cURL: curl -X 'DELETE' \\\n  'https://demoqa.com/Account/v1/User/{UUID}' \\\n  -H 'accept: application/json'"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "Kenapa123!",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "Kenapa123!",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "isbn_id",
+			"value": ""
+		},
+		{
+			"key": "book_title",
+			"value": ""
+		},
+		{
+			"key": "userID",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "baseUrl",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
