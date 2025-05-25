@@ -62,6 +62,7 @@ For example, to run the `userCanSearchBook` method in the `SearchBookTest` class
 - **Programming Language**: Java
 - **Automation Framework**: Selenium WebDriver
 - **Environment Management**: Dotenv
+- **Test Framework**: TestNG
 - **Build Tool**: Maven
 - **Browser**: Google Chrome (via WebDriverManager)
 
