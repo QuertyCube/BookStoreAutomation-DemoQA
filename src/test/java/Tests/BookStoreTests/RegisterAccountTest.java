@@ -22,6 +22,11 @@ public class RegisterAccountTest extends BaseTest {
     private RegisterPage registerPage;
     private Dotenv dotenv;
 
+    // Test data fields
+    private String firstName;
+    private String lastName;
+    private String password;
+
     @BeforeMethod
     public void pageSetUp() throws IOException {
         driver = new ChromeDriver();
@@ -37,54 +42,38 @@ public class RegisterAccountTest extends BaseTest {
 
         // Load environment variables
         dotenv = Dotenv.configure().load();
-
+        firstName = dotenv.get("firstName");
+        lastName = dotenv.get("lastName");
+        password = dotenv.get("password");
     }
 
-    @Test(priority = 1)
-    public void userCannotRegisterWhenRecaptchaIsNotVerified() {
-
-        // Retrieve test data from environment variables
-        String firstName = dotenv.get("firstName");
-        String lastName = dotenv.get("lastName");
-        String username = dotenv.get("username") + "123";
-        String password = dotenv.get("password");
-
-        // Perform actions on the page
+    private void fillRegistrationForm(String firstName, String lastName, String username, String password) {
         loginPage.clickOnAddNewUserButton();
         registerPage.inputFirstName(firstName);
         registerPage.inputLastName(lastName);
         registerPage.inputUserName(username);
         registerPage.inputPassword(password);
         registerPage.clickOnRegisterButton();
+    }
 
-        // Wait for the reCaptcha error message and assert its content
+    @Test(priority = 1)
+    public void userCannotRegisterWhenRecaptchaIsNotVerified() {
+        String username = dotenv.get("username") + "123";
+        fillRegistrationForm(firstName, lastName, username, password);
+
         wait.until(ExpectedConditions.visibilityOf(registerObject.recaptchaError));
         Assert.assertEquals(registerPage.recaptchaErrorMessage(), "Please verify reCaptcha to register!");
     }
 
     @Test(priority = 2)
     public void userCannotRegisterWithMissingDetails() {
-
-        // Retrieve test data from environment variables
-        String firstName = dotenv.get("firstName");
-        String lastName = dotenv.get("lastName");
         String username = "";
-        String password = dotenv.get("password");
+        fillRegistrationForm(firstName, lastName, username, password);
 
-        // Perform actions on the page
-        loginPage.clickOnAddNewUserButton();
-        registerPage.inputFirstName(firstName);
-        registerPage.inputLastName(lastName);
-        registerPage.inputUserName(username);
-        registerPage.inputPassword(password);
-        registerPage.clickOnRegisterButton();
-
-        // Assert the invalid fields count
         Assert.assertEquals(registerPage.invalidFields(), 1, "Invalid fields count mismatch!");
         Assert.assertTrue(registerPage.isUsernameFieldEmpty(), "Username field expected to be empty!");
         Assert.assertFalse(registerPage.isPasswordFieldEmpty(), "Password field expected not be empty!");
-        Assert.assertFalse(registerPage.isFirstNameFieldEmpty(), "First name field expected not be empty!");
-        Assert.assertFalse(registerPage.isLastNameFieldEmpty(), "First name field expected not be empty!");
+        Assert.assertFalse(registerPage.isFirstNameFieldEmpty(), "First name field expected not to be empty!");
+        Assert.assertFalse(registerPage.isLastNameFieldEmpty(), "Last name field expected not to be empty!");
     }
-
 }
