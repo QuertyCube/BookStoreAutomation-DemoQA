@@ -18,6 +18,9 @@ public class SearchBookTest extends BaseTest {
     private ProfileObject profileObject;
     private ProfilePage profilePage;
 
+    private static final String VALID_BOOK = "Git Pocket Guide";
+    private static final String INVALID_BOOK = "xx xx xx";
+
     @BeforeMethod
     public void pageSetUp() throws IOException {
         // Initialize WebDriver and navigate to the books page
@@ -32,19 +35,16 @@ public class SearchBookTest extends BaseTest {
         profileObject = new ProfileObject(driver);
     }
 
+    private boolean isBookFound(String searchInput) {
+        profilePage.inputSearch(searchInput);
+        return profileObject.booksInSearch.stream()
+                .anyMatch(book -> book.getText().equalsIgnoreCase(searchInput));
+    }
+
     @Test(priority = 1)
     public void userCanSearchBook() {
-        // Define the book to search for
-        String searchInput = "Git Pocket Guide";
-
-        // Perform search action
-        profilePage.inputSearch(searchInput);
-
         // Assert that the search results contain the expected book
-        boolean isBookFound = profileObject.booksInSearch.stream()
-                .anyMatch(book -> book.getText().equalsIgnoreCase(searchInput));
-
-        Assert.assertTrue(isBookFound, "The book '" + searchInput + "' was not found in the search results.");
+        Assert.assertTrue(isBookFound(VALID_BOOK), "The book '" + VALID_BOOK + "' was not found in the search results.");
     }
 
     @Test(priority = 3)
@@ -52,30 +52,14 @@ public class SearchBookTest extends BaseTest {
 
         String[] searchInputs = { "git pocket guide", "GIT POCKET GUIDE" };
         for (String searchInput : searchInputs) {
-            // Perform search action
-            profilePage.inputSearch(searchInput);
-
             // Assert that the search results contain the expected book
-            boolean isBookFound = profileObject.booksInSearch.stream()
-                    .anyMatch(book -> book.getText().equalsIgnoreCase(searchInput));
-
-            Assert.assertTrue(isBookFound, "The book '" + searchInput + "' was not found in the search results.");
+            Assert.assertTrue(isBookFound(searchInput), "The book '" + searchInput + "' was not found in the search results.");
         }
     }
 
     // No results are displayed for invalid search queries
     @Test(priority = 2)
     public void userCantFindInvalidBook() {
-        // Define the book to search for
-        String searchInput = "xx xx xx";
-
-        // Perform search action
-        profilePage.inputSearch(searchInput);
-
-        // Assert that the search results contain the expected book
-        boolean isBookFound = profileObject.booksInSearch.stream()
-                .anyMatch(book -> book.getText().equalsIgnoreCase(searchInput));
-
-        Assert.assertFalse(isBookFound, "The book '" + searchInput + "' found in the search results.");
+        Assert.assertFalse(isBookFound(INVALID_BOOK), "The book '" + INVALID_BOOK + "' found in the search results.");
     }
 }
