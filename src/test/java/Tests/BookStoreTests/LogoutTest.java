@@ -19,6 +19,8 @@ import pageaction.SideBarPage;
 
 public class LogoutTest extends BaseTest {
 
+    private ProfileObject profileObject;
+
     @BeforeMethod
     public void pageSetUp() throws IOException {
         driver = new ChromeDriver();
@@ -30,6 +32,7 @@ public class LogoutTest extends BaseTest {
         loginPage = new LoginPage();
         profilePage = new ProfilePage();
         sideBarPage = new SideBarPage();
+        profileObject = new ProfileObject(driver);
 
         Dotenv dotenv = Dotenv.configure().load();
         String username = dotenv.get("username");
@@ -37,48 +40,32 @@ public class LogoutTest extends BaseTest {
         loginPage.inputUsername(username);
         loginPage.inputPassword(password);
         loginPage.clickOnLoginButton();
-
     }
 
-    ProfileObject profileObject = new ProfileObject(driver);
+    private void performLogoutAndAssert() {
+        WebElement logoutButton = profilePage.findButton("Log out");
+        wait.until(ExpectedConditions.elementToBeClickable(logoutButton));
+        boolean logoutButtonIsDisplayed = logoutButton.isDisplayed();
+        System.out.println("Logout button is displayed: " + logoutButtonIsDisplayed);
+        profilePage.clickOnButton("Log out");
+
+        try {
+            logoutButtonIsDisplayed = logoutButton.isDisplayed();
+        } catch (org.openqa.selenium.StaleElementReferenceException e) {
+            logoutButtonIsDisplayed = false;
+        }
+        Assert.assertFalse(logoutButtonIsDisplayed);
+        Assert.assertEquals(driver.getCurrentUrl(), "https://demoqa.com/login");
+    }
 
     @Test(priority = 1)
     public void userCanLogOut() {
-        WebElement logoutButton = profilePage.findButton("Log out");
-        wait.until(ExpectedConditions.elementToBeClickable(logoutButton));
-        boolean logoutButtonIsDisplayed = logoutButton.isDisplayed();
-        System.out.println("Logout button is displayed: " + logoutButtonIsDisplayed);
-        profilePage.clickOnButton("Log out");
-
-        try {
-            logoutButtonIsDisplayed = logoutButton.isDisplayed();
-        } catch (org.openqa.selenium.StaleElementReferenceException e) {
-            // Handle the stale element exception by setting the flag to false
-            logoutButtonIsDisplayed = false;
-        }
-        Assert.assertFalse(logoutButtonIsDisplayed);
-        Assert.assertEquals(driver.getCurrentUrl(), "https://demoqa.com/login");
+        performLogoutAndAssert();
     }
-
 
     @Test(priority = 2)
     public void userCannotAccessProfilePageAfterLoggingOut() {
-
-        WebElement logoutButton = profilePage.findButton("Log out");
-        wait.until(ExpectedConditions.elementToBeClickable(logoutButton));
-        boolean logoutButtonIsDisplayed = logoutButton.isDisplayed();
-        System.out.println("Logout button is displayed: " + logoutButtonIsDisplayed);
-        profilePage.clickOnButton("Log out");
-
-        try {
-            logoutButtonIsDisplayed = logoutButton.isDisplayed();
-        } catch (org.openqa.selenium.StaleElementReferenceException e) {
-            // Handle the stale element exception by setting the flag to false
-            logoutButtonIsDisplayed = false;
-        }
-        Assert.assertFalse(logoutButtonIsDisplayed);
-        Assert.assertEquals(driver.getCurrentUrl(), "https://demoqa.com/login");
-
+        performLogoutAndAssert();
         sideBarPage.clickOnItem("Profile");
         Assert.assertNotNull(profileObject.notLoggedInLabel);
     }
