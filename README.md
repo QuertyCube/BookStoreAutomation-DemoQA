@@ -4,13 +4,17 @@ This case study covers the validation of the **Settlement Request Flow** feature
 
 All detailed test cases — including scenarios, steps, expected results, and mapping to user stories — have been compiled into an Excel document.
 
-📂  **Test Case File** : https://docs.google.com/spreadsheets/d/1wup5dPOytKZ6LsreFH9bVlZtBeQbFaFA/edit?usp=sharing&ouid=112773817720273419085&rtpof=true&sd=true
+📂  **Figma Design** : https://www.figma.com/design/m3B7xbhltcEReaKVbG1ixY/Payment-Aggregator---Settlement-Request-Flow-Testing?node-id=0-1&p=f
 
-📂 **Video Demo** : https://drive.google.com/drive/folders/1UthVQlk82dznLtrb6GKr96jHIsLpDfyi?usp=sharing
+📂  **Test Case File** : https://docs.google.com/spreadsheets/d/1wup5dPOytKZ6LsreFH9bVlZtBeQbFaFA/edit?usp=sharing&ouid=112773817720273419085&rtpof=true&sd=true
 
 # Automation Scripts (DemoQA Bookstore)
 
 This project contains automated test scripts for the DemoQA Bookstore application hosted at [https://demoqa.com/books](https://demoqa.com/books). The tests ensure that the application's features are visually correct, functional, and properly integrated.
+
+📂  **Test Case File** : https://docs.google.com/spreadsheets/d/1nOL6KFqEghnvlilJVY2OgLtzBJAK_8fnqX2l2hczHqQ/edit?usp=sharing
+
+📂 **Video Demo** : https://drive.google.com/drive/folders/1UthVQlk82dznLtrb6GKr96jHIsLpDfyi?usp=sharing
 
 ## **Run a Specific Test Class**
 

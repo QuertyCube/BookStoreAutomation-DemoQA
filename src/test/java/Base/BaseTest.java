@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import java.io.IOException;
+import java.time.Duration;
 
 public class BaseTest {
 
@@ -56,6 +57,28 @@ public class BaseTest {
     public void scrollToElement(WebElement element) {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
+    public void waitForVisibility(WebElement element, int seconds) {
+        new WebDriverWait(driver, Duration.ofSeconds(seconds))
+            .until(ExpectedConditions.visibilityOf(element));
+    }
+
+    public void waitForClickable(WebElement element, int seconds) {
+        new WebDriverWait(driver, Duration.ofSeconds(seconds))
+            .until(ExpectedConditions.elementToBeClickable(element));
+    }
+
+    /**
+     * Checks if an element is present in the DOM.
+     */
+    public boolean isElementPresent(By locator) {
+        try {
+            driver.findElement(locator);
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
     /**
